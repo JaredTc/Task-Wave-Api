@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'task_wave',
     'rest_framework',
+    'rest_framework_simplejwt',
+
 ]
 
 MIDDLEWARE = [
@@ -75,6 +77,21 @@ TEMPLATES = [
 WSGI_APPLICATION = 'TaskWave.wsgi.application'
 
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
+
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
+}
+
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
@@ -85,7 +102,7 @@ DATABASES = {
     # }
 
 'default': {
-        'ENGINE': 'django.db.backends.mysql',
+        'ENGINE': env('DB_ENGINE'),
         'NAME': env('DB_NAME'),
         'USER': env('DB_USER'),
         'PASSWORD': env('DB_PASSWORD'),
