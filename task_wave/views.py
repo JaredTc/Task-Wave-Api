@@ -8,8 +8,10 @@ from django.contrib.auth.models import User
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.decorators import permission_classes
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.db import IntegrityError
 
-from task_wave.serializer import UserRegistrationSerializer, UserSerializer
+from task_wave.models import CustomUser
+from task_wave.serializer import UserRegistrationSerializer, UserSerializer, UpdateUserSerializer
 
 
 class LoginView(APIView):
@@ -29,22 +31,44 @@ class LoginView(APIView):
             return Response({"error": "Invalid Credentials"}, status=status.HTTP_400_BAD_REQUEST)
 
 
-
 class UserRegistrationView(APIView):
+    """
+     API endpoint for user registration.
+     """
+
     def post(self, request):
         serializer = UserRegistrationSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
-            return Response({"message": "User created successfully"}, status=status.HTTP_201_CREATED)
+            try:
+                serializer.save()
+                return Response({"message": "User created successfully"}, status=status.HTTP_201_CREATED)
+            except IntegrityError as e:
+                return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            except Exception as e:
+                return Response({"error": "Something went wrong. Please try again."},
+                                status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @permission_classes([IsAuthenticated])
 class UserListView(APIView):
     def get(self, request):
-        users = User.objects.all()
+        users = CustomUser.objects.all()
         serializer = UserSerializer(users, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+
+permission_classes([IsAuthenticated])
+class UpdateUserView(APIView):
+    def put(self, request, pk):
+        user = CustomUser.objects.get(pk=pk)
+        serializer = UpdateUserSerializer(user, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message": "User update successfully"}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class Hello(APIView):
     def get(self, request):
