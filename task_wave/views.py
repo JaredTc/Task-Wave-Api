@@ -1,5 +1,6 @@
 from django.contrib.auth import authenticate
 from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -24,6 +25,7 @@ class LoginView(APIView):
         if user is not None:
             refresh = RefreshToken.for_user(user)
             return Response({
+                'id': user.id,
                 'refresh': str(refresh),
                 'access': str(refresh.access_token),
             })
@@ -68,6 +70,28 @@ class UpdateUserView(APIView):
             serializer.save()
             return Response({"message": "User update successfully"}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+permission_classes([IsAuthenticated])
+class DeleteUserView(APIView):
+    def delete(self, request, pk):
+        user = get_object_or_404(CustomUser, pk=pk)
+        if not request.user.is_superuser and request.user != user:
+            return Response({'detail': 'No tienes permiso para realizar esta acción.'}, status=status.HTTP_403_FORBIDDEN)
+
+        user.delete()
+        return Response({'message': 'User delete successfully'},status=status.HTTP_204_NO_CONTENT)
+
+
+class UserInfoView(APIView):
+    permission_classes = [IsAuthenticated]  # Solo usuarios autenticados pueden acceder a esta vista
+
+    def get(self, request,pk):
+        try:
+            user = CustomUser.objects.get(pk=pk)  # Obtiene el usuario por su ID
+            serializer = UserSerializer(user)  # Serializa los datos del usuario
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except CustomUser.DoesNotExist:
+            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
 
 
 class Hello(APIView):

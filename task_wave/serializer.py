@@ -82,3 +82,4 @@ class UpdateUserSerializer(serializers.ModelSerializer):
         instance.imgProfile = validated_data.get('imgProfile', instance.imgProfile)
         instance.save()
         return instance
+
