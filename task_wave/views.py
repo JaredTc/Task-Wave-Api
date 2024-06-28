@@ -12,7 +12,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.db import IntegrityError
 
 from task_wave.models import CustomUser
-from task_wave.serializer import UserRegistrationSerializer, UserSerializer, UpdateUserSerializer
+from task_wave.serializer import UserRegistrationSerializer, UserSerializer, UpdateUserSerializer, TaskSerializer
 
 
 class LoginView(APIView):
@@ -52,7 +52,7 @@ class UserRegistrationView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-@permission_classes([IsAuthenticated])
+# @permission_classes([IsAuthenticated])
 class UserListView(APIView):
     def get(self, request):
         users = CustomUser.objects.all()
@@ -61,7 +61,7 @@ class UserListView(APIView):
 
 
 
-permission_classes([IsAuthenticated])
+# permission_classes([IsAuthenticated])
 class UpdateUserView(APIView):
     def put(self, request, pk):
         user = CustomUser.objects.get(pk=pk)
@@ -71,7 +71,7 @@ class UpdateUserView(APIView):
             return Response({"message": "User update successfully"}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-permission_classes([IsAuthenticated])
+# permission_classes([IsAuthenticated])
 class DeleteUserView(APIView):
     def delete(self, request, pk):
         user = get_object_or_404(CustomUser, pk=pk)
@@ -83,7 +83,7 @@ class DeleteUserView(APIView):
 
 
 class UserInfoView(APIView):
-    permission_classes = [IsAuthenticated]  # Solo usuarios autenticados pueden acceder a esta vista
+    # permission_classes = [IsAuthenticated]  # Solo usuarios autenticados pueden acceder a esta vista
 
     def get(self, request,pk):
         try:
@@ -97,3 +97,6 @@ class UserInfoView(APIView):
 class Hello(APIView):
     def get(self, request):
         return JsonResponse({'message': '¡Hola, mundo!'}, status=200)
+
+
+
