@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from task_wave.models import CustomUser
+from task_wave.models import CustomUser, Task
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
@@ -83,3 +83,57 @@ class UpdateUserSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
+class TaskSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Task
+        fields = [
+            'id',
+            'title',
+            'dateEnd',
+            'assigned_to',
+            'description',
+            'category',
+            'status',
+            'is_completed',
+            'alerts',
+            'created_by',
+            'objective',
+            'porcent',
+        ]
+
+    def create(self, validated_data):
+        task = Task.objects.create(
+            title=validated_data['title'],
+            dateEnd=validated_data['dateEnd'],
+            assigned_to=validated_data['assigned_to'],
+            description=validated_data['description'],
+            category=validated_data['category'],
+            status=validated_data['status'],
+            is_completed=validated_data['is_completed'],
+            alerts=validated_data['alerts'],
+            created_by=validated_data['created_by'],
+            objective=validated_data['objective'],
+            porcent=validated_data['porcent']
+        )
+        return task
+
+
+class TasksSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Task
+        fields = [
+            'id',
+            'title',
+            'dateEnd',
+            'assigned_to',
+            'description',
+            'category',
+            'status',
+            'is_completed',
+            'alerts',
+            'created_by',
+            'objective',
+            'porcent',
+            "created_at",
+            "updated_at"
+        ]
