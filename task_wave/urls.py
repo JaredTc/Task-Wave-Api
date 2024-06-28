@@ -1,7 +1,8 @@
 from django.urls import path
 
 from .Task.views import GetTaskView, CreateTask
-from .views import Hello, LoginView, UserRegistrationView, UserListView, UpdateUserView, DeleteUserView, UserInfoView
+from .views import Hello, LoginView, UserRegistrationView, UserListView, UpdateUserView, DeleteUserView, UserInfoView, \
+    HelloLinux
 
 urlpatterns = [
     path('hello/', Hello.as_view(), name='hello'),
@@ -13,4 +14,5 @@ urlpatterns = [
     path('view-user/<int:pk>', UserInfoView.as_view(), name='view-user'),
     path('create-task/', CreateTask.as_view(), name='create-task'),
     path('task-list/', GetTaskView.as_view(), name='task-list'),
+    path('hello-linux/', HelloLinux.as_view(), name='hello-linux'),
 ]
