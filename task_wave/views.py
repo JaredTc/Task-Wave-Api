@@ -98,5 +98,9 @@ class Hello(APIView):
     def get(self, request):
         return JsonResponse({'message': '¡Hola, mundo!'}, status=200)
 
+class HelloLinux(APIView):
+    def get(self, request):
+        return JsonResponse({'message': 'Hello, Linux!'}, status=200)
+
 
 
